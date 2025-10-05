@@ -4,3 +4,7 @@ export interface TranscriptSegment {
   duration?: number;
   lang: string;
 }
+
+export interface Claim {
+  text: string; // Financial/investment claim
+}
