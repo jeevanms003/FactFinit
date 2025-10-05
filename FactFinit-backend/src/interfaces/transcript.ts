@@ -1,10 +1,6 @@
 export interface TranscriptSegment {
   text: string;
   start: number;
-  duration?: number;
+  duration: number | undefined; // Allow undefined
   lang: string;
-}
-
-export interface Claim {
-  text: string; // Financial/investment claim
 }

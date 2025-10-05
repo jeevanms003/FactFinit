@@ -1,10 +1,10 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { VerifyRequest } from '../interfaces/verifyRequest';
-import { TranscriptSegment, Claim } from '../interfaces/transcript';
+import { TranscriptSegment } from '../interfaces/transcript';
 import { detectPlatform } from '../utils/platformDetector';
 import { fetchYouTubeTranscript } from '../services/youtubeTranscript';
 import { fetchInstagramTranscript } from '../services/instagramTranscript';
-import { extractClaimsFromRawTranscript } from '../services/claimExtractor';
+import { factCheckTranscript } from '../services/factChecker';
 import { TranscriptModel } from '../models/transcriptModel';
 
 const router = Router();
@@ -61,24 +61,24 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
       });
     }
 
-    const { normalizedTranscript, claims } = await extractClaimsFromRawTranscript(transcript);
+    const { normalizedTranscript, factCheck } = await factCheckTranscript(transcript);
 
     await TranscriptModel.create({
       videoURL,
       platform: normalizedPlatform,
       transcript,
       normalizedTranscript,
-      claims,
+      factCheck,
     });
 
     res.status(200).json({
-      message: 'Transcript processed successfully',
+      message: 'Transcript and fact-checking processed successfully',
       data: {
         videoURL,
         platform: normalizedPlatform,
         transcript,
         normalizedTranscript,
-        claims,
+        factCheck,
       },
     });
   } catch (error) {
