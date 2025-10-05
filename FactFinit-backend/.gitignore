@@ -1,0 +1,44 @@
+# Node.js dependencies
+node_modules/
+
+# TypeScript build output
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor and OS files
+.DS_Store
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Coverage reports (if you add testing later)
+coverage/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Local development artifacts
+*.pid
+*.seed
+*.pid.lock
