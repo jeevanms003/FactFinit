@@ -2,19 +2,6 @@
 
 FactFinit is a Node.js backend application for fetching, normalizing, and caching video transcripts from YouTube and Instagram. It uses AI to normalize transcripts into cohesive English text and stores results in MongoDB for efficient retrieval.
 
-## Table of Contents
-- [Features](#features)
-- [Technologies](#technologies)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Environment Variables](#environment-variables)
-- [Usage](#usage)
-- [API Endpoints](#api-endpoints)
-- [Project Structure](#project-structure)
-- [Error Handling](#error-handling)
-- [Contributing](#contributing)
-- [License](#license)
-
 ## Features
 - Fetches transcripts from YouTube and Instagram videos.
 - Supports multiple languages (English, Hindi, Tamil, Bengali, Marathi, and custom languages).
