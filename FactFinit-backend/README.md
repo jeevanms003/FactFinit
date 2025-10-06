@@ -173,5 +173,4 @@ The `factChecker.ts` service includes retry logic with exponential backoff (2s, 
    git push origin feature/your-feature
    ```
 5. Open a pull request.
-
-Ensure code follows the existing style and includes tests where applicable.
+6. Ensure code follows the existing style and includes tests where applicable.
