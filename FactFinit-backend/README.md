@@ -32,7 +32,7 @@ FactFinit is a Node.js backend application for fetching, normalizing, and cachin
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/jeevanms003/.git
+   git clone https://github.com/jeevanms003/FactFinit.git
    cd factfinit
    cd factfinit-backend
    ```
