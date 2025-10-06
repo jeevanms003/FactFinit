@@ -118,9 +118,9 @@ Fetches and normalizes video transcripts.
 **Request Body**:
 ```json
 {
-  "videoURL": "string", // Required: Video URL
-  "platform": "string", // Optional: YouTube or Instagram
-  "language": "string"  // Optional: Preferred language (e.g., en, hi)
+  "videoURL": "string", 
+  "platform": "string", 
+  "language": "string"  
 }
 ```
 **Responses**:
