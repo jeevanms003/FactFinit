@@ -81,58 +81,60 @@ The application requires the following environment variables in a `.env` file:
 | `SUPADATA_API_KEY`      | Supadata API key for Instagram                   | `your-supadata-api-key`                      |
 | `SUPADATA_API_ENDPOINT` | Supadata API endpoint                            | `https://api.supadata.com/transcript`        |
 
-## Usage
-The application exposes a REST API to process video transcripts. Send a POST request to `/api/verify` with a video URL, optional platform, and language. The server will:
-- Detect the platform (YouTube or Instagram).
-- Extract the video ID.
-- Fetch transcripts in specified or default languages (`en`, `hi`, `ta`, `bn`, `mr`).
-- Normalize transcripts using AI.
-- Cache results in MongoDB.
-- Return the transcript and normalized text.
+## Usage in Postman
 
-**Example Request**:
-```bash
-curl -X POST http://localhost:5000/api/verify \
--H "Content-Type: application/json" \
--d '{"videoURL": "https://www.youtube.com/watch?v=dQw4w9WgXcQ", "platform": "YouTube", "language": "en"}'
-```
-**Example Response**:
-```json
-{
-  "message": "Transcript processed successfully",
-  "data": {
-    "videoURL": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    "platform": "YouTube",
-    "transcript": {
-      "en": [
-        { "text": "Sample text", "start": 0, "duration": 2.5, "lang": "en" }
-      ]
-    },
-    "normalizedTranscript": "Normalized English text."
-  }
-}
-```
-## API Endpoints
-### `POST /api/verify`
-Fetches and normalizes video transcripts.
+To test the FactFinit backend API in Postman, you can send a POST request to the `/api/verify` endpoint to fetch and normalize video transcripts from YouTube or Instagram. Below are the steps to set up and use the API in Postman:
 
-**Request Body**:
-```json
-{
-  "videoURL": "string", 
-  "platform": "string", 
-  "language": "string"  
-}
-```
-**Responses**:
-- **200 OK**: Transcript processed or retrieved from cache.
-- **400 Bad Request**: Invalid URL or unsupported platform.
-- **404 Not Found**: Transcript not available.
+1. **Open Postman**: Launch Postman and create a new request.
 
-**Error Response**:
-```json
-{ "error": "Invalid videoURL format" }
-```
+2. **Set Request Type and URL**:
+   - Select `POST` as the HTTP method.
+   - Enter the endpoint URL: `http://localhost:5000/api/verify` (replace `5000` with the port specified in your `.env` file if different).
+
+3. **Configure Headers**:
+   - Add a header: `Content-Type: application/json`.
+
+4. **Set Request Body**:
+   - Go to the "Body" tab, select "raw," and choose "JSON" as the format.
+   - Enter the JSON payload with the required `videoURL` field. Example:
+     ```json
+     {
+       "videoURL": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+     }
+     ```
+     - `videoURL`: Required. The URL of the YouTube or Instagram video.
+
+5. **Send the Request**:
+   - Click "Send" to make the request to the server.
+   - The server will:
+     - Detect the platform (YouTube or Instagram).
+     - Extract the video ID.
+     - Fetch transcripts in default languages (`en`, `hi`, `ta`, `bn`, `mr`).
+     - Normalize transcripts using Google Generative AI.
+     - Cache results in MongoDB.
+     - Return the transcript and normalized text.
+
+6. **Expected Response**:
+   - On success (HTTP 200), you’ll receive a JSON response like:
+     ```json
+     {
+       "message": "Transcript processed successfully",
+       "data": {
+         "videoURL": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+         "platform": "YouTube",
+         "transcript": {
+           "en": [
+             { "text": "Sample text", "start": 0, "duration": 2.5, "lang": "en" }
+           ]
+         },
+         "normalizedTranscript": "Normalized English text."
+       }
+     }
+     ```
+   - On error (e.g., HTTP 400 or 404), you’ll receive:
+     ```json
+     { "error": "Invalid videoURL format" }
+     ```
 ## Project Structure
 ```plaintext
 factfinit-backend/
