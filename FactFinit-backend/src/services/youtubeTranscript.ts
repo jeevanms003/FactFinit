@@ -7,19 +7,29 @@ export async function fetchYouTubeTranscript(
 ): Promise<Record<string, TranscriptSegment[] | string>> {
   const result: Record<string, TranscriptSegment[] | string> = {};
 
-  for (const lang of languages) {
+  // Fetch transcripts for all languages concurrently
+  const transcriptPromises = languages.map(async (lang) => {
     try {
       const transcriptRaw = await fetchTranscript(videoId, { lang });
-      result[lang] = transcriptRaw.map(segment => ({
-        text: segment.text,
-        start: segment.offset / 1000, // Convert ms to seconds
-        duration: segment.duration ? segment.duration / 1000 : undefined,
+      return {
         lang,
-      }));
+        data: transcriptRaw.map(segment => ({
+          text: segment.text,
+          start: segment.offset / 1000, // Convert ms to seconds
+          duration: segment.duration ? segment.duration / 1000 : undefined,
+          lang,
+        })),
+      };
     } catch (error) {
-      result[lang] = `Transcript not available in ${lang}`;
+      console.error(`Failed to fetch YouTube transcript for ${lang}:`, error);
+      return { lang, data: `Transcript not available in ${lang}` };
     }
-  }
+  });
+
+  const results = await Promise.all(transcriptPromises);
+  results.forEach(({ lang, data }) => {
+    result[lang] = data;
+  });
 
   return result;
 }

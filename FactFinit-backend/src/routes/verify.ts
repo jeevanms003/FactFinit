@@ -2,9 +2,11 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { VerifyRequest } from '../interfaces/verifyRequest';
 import { TranscriptSegment } from '../interfaces/transcript';
 import { detectPlatform } from '../utils/platformDetector';
+import { extractYouTubeId } from '../utils/youtubeIdExtractor';
+import { extractInstagramId } from '../utils/instagramIdExtractor';
 import { fetchYouTubeTranscript } from '../services/youtubeTranscript';
 import { fetchInstagramTranscript } from '../services/instagramTranscript';
-import { factCheckTranscript } from '../services/factChecker';
+import { normalizeTranscript } from '../services/factChecker';
 import { TranscriptModel } from '../models/transcriptModel';
 
 const router = Router();
@@ -13,26 +15,47 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { videoURL, platform: providedPlatform, language }: VerifyRequest = req.body;
 
-    if (!videoURL) {
-      throw new Error('videoURL is required');
+    if (!videoURL || videoURL.trim() === '') {
+      throw new Error('videoURL is required and cannot be empty');
     }
 
+    // Clean URL
+    let cleanedURL = videoURL.trim();
+    if (!cleanedURL.startsWith('http://') && !cleanedURL.startsWith('https://')) {
+      cleanedURL = `https://${cleanedURL}`;
+    }
     try {
-      new URL(videoURL);
+      new URL(cleanedURL);
     } catch {
       throw new Error('Invalid videoURL format');
     }
 
+    // Normalize platform
     const normalizedPlatform = providedPlatform
       ? providedPlatform.toLowerCase() === 'youtube'
         ? 'YouTube'
         : providedPlatform.toLowerCase() === 'instagram'
         ? 'Instagram'
         : providedPlatform
-      : detectPlatform(videoURL);
+      : detectPlatform(cleanedURL);
 
     if (normalizedPlatform === 'Unknown') {
-      return res.status(400).json({ error: 'Unsupported platform' });
+      throw new Error('Unsupported platform');
+    }
+
+    // Check for cached transcript
+    const cachedTranscript = await TranscriptModel.findOne({ videoURL: cleanedURL }).lean();
+    if (cachedTranscript) {
+      console.log(`Returning cached transcript for ${cleanedURL}`);
+      return res.status(200).json({
+        message: 'Transcript retrieved from cache',
+        data: {
+          videoURL: cleanedURL,
+          platform: normalizedPlatform,
+          transcript: cachedTranscript.transcript,
+          normalizedTranscript: cachedTranscript.normalizedTranscript,
+        },
+      });
     }
 
     const desiredLanguages = ['en', 'hi', 'ta', 'bn', 'mr'];
@@ -42,14 +65,19 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
 
     let transcript: Record<string, TranscriptSegment[] | string>;
     if (normalizedPlatform === 'YouTube') {
-      const url = new URL(videoURL);
-      const videoId = url.searchParams.get('v') || videoURL.split('/').pop() || '';
+      const videoId = extractYouTubeId(cleanedURL);
       if (!videoId) {
-        throw new Error('Invalid YouTube video ID');
+        throw new Error('Could not extract YouTube video ID');
       }
+      console.log(`Processing YouTube video ID: ${videoId}`);
       transcript = await fetchYouTubeTranscript(videoId, desiredLanguages);
     } else if (normalizedPlatform === 'Instagram') {
-      transcript = await fetchInstagramTranscript(videoURL, desiredLanguages);
+      const videoId = extractInstagramId(cleanedURL);
+      if (!videoId) {
+        throw new Error('Could not extract Instagram video ID');
+      }
+      console.log(`Processing Instagram video ID: ${videoId}`);
+      transcript = await fetchInstagramTranscript(cleanedURL, desiredLanguages);
     } else {
       throw new Error('Platform not supported');
     }
@@ -61,24 +89,22 @@ router.post('/', async (req: Request, res: Response, next: NextFunction) => {
       });
     }
 
-    const { normalizedTranscript, factCheck } = await factCheckTranscript(transcript);
+    const { normalizedTranscript } = await normalizeTranscript(transcript);
 
     await TranscriptModel.create({
-      videoURL,
+      videoURL: cleanedURL,
       platform: normalizedPlatform,
       transcript,
       normalizedTranscript,
-      factCheck,
     });
 
     res.status(200).json({
-      message: 'Transcript and fact-checking processed successfully',
+      message: 'Transcript processed successfully',
       data: {
-        videoURL,
+        videoURL: cleanedURL,
         platform: normalizedPlatform,
         transcript,
         normalizedTranscript,
-        factCheck,
       },
     });
   } catch (error) {

@@ -8,24 +8,40 @@ export async function fetchInstagramTranscript(
   const result: Record<string, TranscriptSegment[] | string> = {};
   const SUPADATA_API_ENDPOINT = process.env.SUPADATA_API_ENDPOINT || 'https://api.supadata.com/transcript';
 
-  for (const lang of languages) {
+  // Fetch transcripts for all languages concurrently
+  const transcriptPromises = languages.map(async (lang) => {
     try {
       const response = await axios.post(
         SUPADATA_API_ENDPOINT,
         { url: videoURL, lang },
-        { headers: { Authorization: `Bearer ${process.env.SUPADATA_API_KEY}` } }
+        {
+          headers: { Authorization: `Bearer ${process.env.SUPADATA_API_KEY}` },
+          timeout: 10000, // 10-second timeout
+        }
       );
       const transcriptRaw = response.data.transcript;
-      result[lang] = transcriptRaw.map((seg: any) => ({
-        text: seg.text,
-        start: seg.start / 1000,
-        duration: seg.duration ? seg.duration / 1000 : undefined,
+      if (!transcriptRaw || !Array.isArray(transcriptRaw)) {
+        return { lang, data: `No transcript data returned for ${lang}` };
+      }
+      return {
         lang,
-      }));
+        data: transcriptRaw.map((seg: any) => ({
+          text: seg.text || '',
+          start: seg.start ? seg.start / 1000 : 0,
+          duration: seg.duration ? seg.duration / 1000 : undefined,
+          lang,
+        })),
+      };
     } catch (error) {
-      result[lang] = `Transcript not available in ${lang}`;
+      console.error(`Failed to fetch Instagram transcript for ${lang}:`, error);
+      return { lang, data: `Transcript not available in ${lang}` };
     }
-  }
+  });
+
+  const results = await Promise.all(transcriptPromises);
+  results.forEach(({ lang, data }) => {
+    result[lang] = data;
+  });
 
   return result;
 }
