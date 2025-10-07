@@ -1,28 +1,38 @@
-// lib/models/verify_response.dart
 class VerifyResponse {
-  final TranscriptData? data;
+  final String message;
+  final VerifyData? data;
   final String? error;
 
-  VerifyResponse({this.data, this.error});
+  VerifyResponse({required this.message, this.data, this.error});
 
   factory VerifyResponse.fromJson(Map<String, dynamic> json) {
     return VerifyResponse(
-      data: json['data'] != null ? TranscriptData.fromJson(json['data']) : null,
+      message: json['message'] ?? '',
+      data: json['data'] != null ? VerifyData.fromJson(json['data']) : null,
       error: json['error'],
     );
   }
 }
 
-class TranscriptData {
+class VerifyData {
+  final String videoURL;
+  final String platform;
+  final Map<String, dynamic> transcript;
   final String normalizedTranscript;
-  final String? platform;
 
-  TranscriptData({required this.normalizedTranscript, this.platform});
+  VerifyData({
+    required this.videoURL,
+    required this.platform,
+    required this.transcript,
+    required this.normalizedTranscript,
+  });
 
-  factory TranscriptData.fromJson(Map<String, dynamic> json) {
-    return TranscriptData(
+  factory VerifyData.fromJson(Map<String, dynamic> json) {
+    return VerifyData(
+      videoURL: json['videoURL'] ?? '',
+      platform: json['platform'] ?? '',
+      transcript: json['transcript'] ?? {},
       normalizedTranscript: json['normalizedTranscript'] ?? '',
-      platform: json['platform'],
     );
   }
 }

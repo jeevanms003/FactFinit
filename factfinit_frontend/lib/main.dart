@@ -35,13 +35,36 @@ class HomeScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'FactFinit',
-          style: TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'assets/images/logo.png',
+              height: isWideScreen ? 40 : 32,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                print('Failed to load logo at assets/images/logo.png: $error');
+                return const Text(
+                  'F',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                );
+              },
+            ),
+            const SizedBox(width: 8),
+            const Text(
+              'FactFinit',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
         ),
         centerTitle: true,
         actions: [
