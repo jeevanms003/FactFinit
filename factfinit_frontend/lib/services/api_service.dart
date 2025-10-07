@@ -1,31 +1,27 @@
-import 'dart:convert';
+// lib/services/api_service.dart
 import 'package:http/http.dart' as http;
-import '../constants.dart';
+import 'dart:convert';
 import '../models/verify_response.dart';
 
 class ApiService {
-  Future<VerifyResponse> fetchTranscript({required String videoURL}) async {
-    final url = Uri.parse('${Constants.apiBaseUrl}/api/verify');
-    final body = {'videoURL': videoURL};
+  static const String _baseUrl = 'http://your-backend-url:port'; // Replace with your backend URL
 
+  Future<VerifyResponse> fetchTranscript({required String videoURL}) async {
     try {
       final response = await http.post(
-        url,
+        Uri.parse('$_baseUrl/api/transcript'), // Adjust endpoint
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(body),
-      );
+        body: jsonEncode({'videoURL': videoURL}),
+      ).timeout(const Duration(seconds: 10));
 
-      print('Backend response: ${response.statusCode} - ${response.body}'); // Debug log
-
-      final jsonResponse = jsonDecode(response.body);
-      if (response.statusCode == 200 || response.statusCode == 404) {
-        return VerifyResponse.fromJson(jsonResponse);
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        return VerifyResponse.fromJson(json);
       } else {
-        throw Exception('Failed to fetch transcript: ${response.statusCode} - ${jsonResponse['error'] ?? 'Unknown error'}');
+        return VerifyResponse(error: 'Failed to fetch transcript: ${response.statusCode}');
       }
     } catch (e) {
-      print('API error: $e'); // Debug log
-      throw Exception('Error fetching transcript: $e');
+      return VerifyResponse(error: 'Network error: $e');
     }
   }
 }
