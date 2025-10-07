@@ -69,7 +69,7 @@ Output format: {"normalizedTranscript": "string"}
   while (attempts < maxAttempts) {
     attempts++;
     try {
-      console.log(Attempt ${attempts} to normalize transcript (length: ${combinedText.length} chars));
+      console.log(`Attempt ${attempts} to normalize transcript (length: ${combinedText.length} chars)`);
       const result = await model.generateContent(prompt, { timeout: 20000 });
       const responseText = result.response.text().replace(/json\n|\n/g, '').trim();
 
@@ -96,15 +96,15 @@ Output format: {"normalizedTranscript": "string"}
       }
     } catch (error: any) {
       lastError = error;
-      console.error(Normalization attempt ${attempts} failed:, error.message);
+      console.error(`Normalization attempt ${attempts} failed:`, error.message);
 
       if (attempts === maxAttempts) {
-        console.warn(All ${maxAttempts} attempts failed);
+        console.warn(`All ${maxAttempts} attempts failed`);
         break;
       }
 
       const delay = baseDelay * Math.pow(2, attempts);
-      console.log(Retrying after ${delay}ms...);
+      console.log(`Retrying after ${delay}ms...`);
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
