@@ -39,7 +39,7 @@ class HomeScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(
-              'assets/images/logo.png',
+              'assets/images/logo.png', // Updated to PNG
               height: isWideScreen ? 40 : 32,
               fit: BoxFit.contain,
               errorBuilder: (context, error, stackTrace) {
