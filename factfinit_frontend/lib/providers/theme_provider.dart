@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class ThemeProvider extends ChangeNotifier {
   bool _isDarkMode = false;
@@ -21,7 +20,17 @@ class ThemeProvider extends ChangeNotifier {
       onError: Colors.white,
     ),
     scaffoldBackgroundColor: const Color(0xFFF8FAFC),
-    textTheme: GoogleFonts.poppinsTextTheme().apply(
+    textTheme: const TextTheme(
+      displayLarge: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w700),
+      displayMedium: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+      displaySmall: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+      headlineMedium: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+      headlineSmall: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+      titleLarge: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+      bodyLarge: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w400),
+      bodyMedium: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w400),
+      labelLarge: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w500),
+    ).apply(
       bodyColor: const Color(0xFF0F172A),
       displayColor: const Color(0xFF0F172A),
     ),
@@ -94,7 +103,7 @@ class ThemeProvider extends ChangeNotifier {
       ),
     ),
     iconTheme: const IconThemeData(
-      color: Color(0xFF4F46E5), // Ensure icons are visible
+      color: Color(0xFF4F46E5),
       size: 20,
     ),
   );
@@ -112,7 +121,17 @@ class ThemeProvider extends ChangeNotifier {
       onError: Color(0xFF0F172A),
     ),
     scaffoldBackgroundColor: const Color(0xFF0F172A),
-    textTheme: GoogleFonts.poppinsTextTheme().apply(
+    textTheme: const TextTheme(
+      displayLarge: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w700),
+      displayMedium: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+      displaySmall: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+      headlineMedium: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+      headlineSmall: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+      titleLarge: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w600),
+      bodyLarge: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w400),
+      bodyMedium: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w400),
+      labelLarge: TextStyle(fontFamily: 'Poppins', fontWeight: FontWeight.w500),
+    ).apply(
       bodyColor: const Color(0xFFF1F5F9),
       displayColor: const Color(0xFFF1F5F9),
     ),
@@ -185,7 +204,7 @@ class ThemeProvider extends ChangeNotifier {
       ),
     ),
     iconTheme: const IconThemeData(
-      color: Color(0xFF818CF8), // Ensure icons are visible
+      color: Color(0xFF818CF8),
       size: 20,
     ),
   );
